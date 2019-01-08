@@ -13,39 +13,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ProjectDatabase {
+public class ProjectDatabase extends InternalProjectDatabase {
 
-    private static final HashMap<Class, ModelController> CONTROLLERS = new HashMap<>();
-    private static final HashMap<Class, AbstractModelJDBCProvider> JDBC_PROVIDER_CONTROLLERS = new HashMap<>();
 
-    private static ProjectLibraryDatabase DATABASE;
+
+    private ProjectLibraryDatabase DATABASE;
 
     private ProjectDatabase() {
+        super();
 
     }
 
-    private static void set(Class klass, AbstractModelJDBCProvider provider) {
-        CONTROLLERS.put(klass, new ModelController<>(klass));
-        JDBC_PROVIDER_CONTROLLERS.put(klass, provider);
-    }
 
-    public static <MODEL_CLASS extends Model> ModelController<MODEL_CLASS> get(Class<MODEL_CLASS> klass) {
-        return CONTROLLERS.get(klass);
-    }
-
-    public static <MODEL_CLASS extends Model> AbstractModelJDBCProvider getJDBCObjectProvider(Class<MODEL_CLASS> klass) {
-        return JDBC_PROVIDER_CONTROLLERS.get(klass);
-    }
-
-    private static void open() {
-        try {
-            DATABASE = new ProjectLibraryDatabase();
-        } catch (NoSuchFieldException | SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void init() {
+    public void init() {
         set(Category.class, new CategoryJDBCProvider());
         set(Oeuvre.class, new OeuvreJDBCProvider());
         //set(OeuvreCategory.class, new OeuvreCategoryJDBCProvider());
@@ -53,7 +33,5 @@ public class ProjectDatabase {
         open();
     }
 
-    public static List<ModelController> getControllers() {
-        return new ArrayList<>(CONTROLLERS.values());
-    }
+
 }
