@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 public class ProjectLibraryDatabase extends DatabaseModel<ResultSet, HashMap<String, Object>> {
+    static InternalProjectDatabase parent;
+
     public ProjectLibraryDatabase() throws NoSuchFieldException, SQLException, ClassNotFoundException {
         super((Object[]) null);
     }
@@ -44,7 +46,7 @@ public class ProjectLibraryDatabase extends DatabaseModel<ResultSet, HashMap<Str
 
     @Override
     protected void onRegisterObjectModels(HashMap<Type, ObjectModel<?, ResultSet, HashMap<String, Object>>> hashMap) throws ClassNotFoundException, NoSuchFieldException {
-        for (ModelController controller : ProjectDatabase.getControllers()) {
+        for (ModelController controller : parent.getControllers()) {
             controller.initModelForDatabase(hashMap, this);
         }
     }

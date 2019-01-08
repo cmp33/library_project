@@ -1,5 +1,6 @@
 package com.cesi.lighter_custom.database.controllers;
 
+import com.cesi.lighter_custom.database.db.InternalProjectDatabase;
 import com.cesi.lighter_custom.database.db.ProjectDatabase;
 import com.cesi.lighter_custom.database.db.ProjectLibraryDatabase;
 import com.cesi.lighter_custom.database.models.Model;
@@ -19,15 +20,17 @@ import java.util.List;
  */
 public class ModelController<MODEL_CLASS extends Model> {
 
+    private InternalProjectDatabase parent;
     private Class<MODEL_CLASS> klass;
     private ObjectModel<MODEL_CLASS, ResultSet, HashMap<String, Object>> provider;
 
     private ModelController() {
     }
 
-    public ModelController(Class<MODEL_CLASS> klass) {
+    public ModelController(InternalProjectDatabase parent, Class<MODEL_CLASS> klass) {
         this();
 
+        this.parent = parent;
         this.klass = klass;
     }
 
@@ -81,7 +84,7 @@ public class ModelController<MODEL_CLASS extends Model> {
 
 
     public void initModelForDatabase(HashMap<Type, ObjectModel<?, ResultSet, HashMap<String, Object>>> objectModels, ProjectLibraryDatabase instance) throws NoSuchFieldException, ClassNotFoundException {
-        provider = ProjectDatabase.getJDBCObjectProvider(klass).createJDBCObject(instance);
+        provider = parent.getJDBCObjectProvider(klass).createJDBCObject(instance);
         objectModels.put(klass, provider);
     }
 

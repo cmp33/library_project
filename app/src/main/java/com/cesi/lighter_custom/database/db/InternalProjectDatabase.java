@@ -2,12 +2,8 @@ package com.cesi.lighter_custom.database.db;
 
 import com.cesi.lighter_custom.database.controllers.AbstractModelJDBCProvider;
 import com.cesi.lighter_custom.database.controllers.ModelController;
-import com.cesi.lighter_custom.database.controllers.jdbc.CategoryJDBCProvider;
-import com.cesi.lighter_custom.database.controllers.jdbc.OeuvreJDBCProvider;
-import com.cesi.lighter_custom.database.models.Category;
-import com.cesi.lighter_custom.database.models.Model;
-import com.cesi.lighter_custom.database.models.Oeuvre;
 
+import com.cesi.lighter_custom.database.models.Model;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,9 +19,8 @@ public abstract class InternalProjectDatabase {
     protected InternalProjectDatabase() {
 
     }
-
-    public void set(Class klass, AbstractModelJDBCProvider provider) {
-        CONTROLLERS.put(klass, new ModelController<>(klass));
+    protected void set(Class klass, AbstractModelJDBCProvider provider) {
+        CONTROLLERS.put(klass, new ModelController<>(this, klass));
         JDBC_PROVIDER_CONTROLLERS.put(klass, provider);
     }
 
@@ -37,8 +32,10 @@ public abstract class InternalProjectDatabase {
         return JDBC_PROVIDER_CONTROLLERS.get(klass);
     }
 
-    public void open() {
+    protected void open() {
         try {
+            //temporary to fix issue with availability
+            ProjectLibraryDatabase.parent = this;
             DATABASE = new ProjectLibraryDatabase();
         } catch (NoSuchFieldException | SQLException | ClassNotFoundException e) {
             e.printStackTrace();
